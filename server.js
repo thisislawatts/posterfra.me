@@ -119,10 +119,6 @@ var Stilleo = function() {
         self.app = express.createServer();
 
         //  Add handlers for the app (from the routes).
-        for (var r in self.routes) {
-            self.app.get(r, self.routes[r]);
-        }
-
         self.app.get(/^\/id\/(\d+)?$/, function(req, res) {
             var video_id = req.params[0];
 
