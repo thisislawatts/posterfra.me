@@ -1,7 +1,7 @@
 {
-  "name": "OpenShift-Sample-App",
+  "name": "Stilleo",
   "version": "1.0.0",
-  "description": "OpenShift Sample Application",
+  "description": "Stilleo Vimeo Application",
   "keywords": [
     "OpenShift",
     "Node.js",

@@ -1,13 +1,13 @@
 #!/bin/env node
-//  OpenShift sample Node application
 var express = require('express');
 var fs      = require('fs');
+var request = require('request');
 
 
 /**
  *  Define the sample application.
  */
-var SampleApp = function() {
+var Stilleo = function() {
 
     //  Scope.
     var self = this;
@@ -96,8 +96,11 @@ var SampleApp = function() {
         self.routes = { };
 
         self.routes['/asciimo'] = function(req, res) {
-            var link = "http://i.imgur.com/kmbjB.png";
-            res.send("<html><body><img src='" + link + "'></body></html>");
+            request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/72630173', function(err, response, body) {
+                if ( !err && response.statusCode == 200 ) {
+                    request(JSON.parse(body).thumbnail_url).pipe(res);
+                }
+            })
         };
 
         self.routes['/'] = function(req, res) {
@@ -119,6 +122,19 @@ var SampleApp = function() {
         for (var r in self.routes) {
             self.app.get(r, self.routes[r]);
         }
+
+        self.app.get(/^\/id\/(\d+)?$/, function(req, res) {
+            var video_id = req.params[0];
+
+            console.log('Video ID: ', video_id);
+            request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/' + video_id, function(err, response, body) {
+                if ( !err && response.statusCode == 200 ) {
+                    request(JSON.parse(body).thumbnail_url).pipe(res);
+                } else {
+                    console.log(err, response);
+                }
+            })
+        })
     };
 
 
@@ -146,14 +162,13 @@ var SampleApp = function() {
         });
     };
 
-};   /*  Sample Application.  */
+};   /*  Stilleo Application.  */
 
 
 
 /**
  *  main():  Main code.
  */
-var zapp = new SampleApp();
+var zapp = new Stilleo();
 zapp.initialize();
 zapp.start();
-
