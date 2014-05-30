@@ -36,7 +36,7 @@ var Stilleo = function() {
 
             client = redis.createClient()
         } else {
-            client = redis.createClient( process.env.REDIS_PASSWORD, process.env.OPENSHIFT_REDIS_HOST );
+            client = redis.createClient( process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
             client.auth( process.env.REDIS_PASSWORD );
         }
     };
