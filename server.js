@@ -4,7 +4,7 @@ var express = require('express');
 var fs      = require('fs');
 var request = require('request');
 var redis   = require('redis');
-var client = redis.createClient();
+var client;
 
 
 /**
@@ -33,7 +33,12 @@ var Stilleo = function() {
             //  allows us to run/test the app locally.
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = "127.0.0.1";
-        };
+
+            client = redis.createClient()
+        } else {
+            client = redis.createClient( process.env.REDIS_PASSWORD, process.env.OPENSHIFT_REDIS_HOST );
+            client.auth( process.env.REDIS_PASSWORD );
+        }
     };
 
     /**
