@@ -1,7 +1,10 @@
 #!/bin/env node
+
 var express = require('express');
 var fs      = require('fs');
 var request = require('request');
+var redis   = require('redis');
+var client = redis.createClient();
 
 
 /**
@@ -32,27 +35,6 @@ var Stilleo = function() {
             self.ipaddress = "127.0.0.1";
         };
     };
-
-
-    /**
-     *  Populate the cache.
-     */
-    self.populateCache = function() {
-        if (typeof self.zcache === "undefined") {
-            self.zcache = { 'index.html': '' };
-        }
-
-        //  Local cache for static content.
-        self.zcache['index.html'] = fs.readFileSync('./index.html');
-    };
-
-
-    /**
-     *  Retrieve entry (content) from cache.
-     *  @param {string} key  Key identifying content to retrieve from cache.
-     */
-    self.cache_get = function(key) { return self.zcache[key]; };
-
 
     /**
      *  terminator === the termination handler
@@ -90,48 +72,46 @@ var Stilleo = function() {
     /*  ================================================================  */
 
     /**
-     *  Create the routing table entries + handlers for the application.
-     */
-    self.createRoutes = function() {
-        self.routes = { };
-
-        self.routes['/asciimo'] = function(req, res) {
-            request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/72630173', function(err, response, body) {
-                if ( !err && response.statusCode == 200 ) {
-                    request(JSON.parse(body).thumbnail_url).pipe(res);
-                }
-            })
-        };
-
-        self.routes['/'] = function(req, res) {
-            res.setHeader('Content-Type', 'text/html');
-            res.send(self.cache_get('index.html') );
-        };
-    };
-
-
-    /**
      *  Initialize the server (express) and create the routes and register
      *  the handlers.
      */
     self.initializeServer = function() {
-        self.createRoutes();
-        self.app = express.createServer();
+        self.app = express();
 
         //  Add handlers for the app (from the routes).
         self.app.get(/^\/id\/(\d+)?$/, function(req, res) {
             var video_id = req.params[0];
 
-            console.log('Video ID: ', video_id);
-            request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/' + video_id, function(err, response, body) {
-                if ( !err && response.statusCode == 200 ) {
-                    request(JSON.parse(body).thumbnail_url).pipe(res);
+            client.get(video_id, function(err, result) {
+
+                if (err || !result) {
+                    console.log('Querying vimeo ID: ', video_id);
+                    self.queryVimeo( req, res, video_id );
                 } else {
-                    console.log(err, response);
+                    console.log("Redis works!", result);
+                    request(result).pipe(res);
                 }
-            })
+           })
         })
+
+        self.app.get('/', function(req, res) {
+            req.write('Test');
+        });
     };
+
+    self.queryVimeo = function( req, res, video_id ) {
+       request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/' + video_id, function(err, response, body) {
+            if ( !err && response.statusCode == 200 ) {
+
+                var json = JSON.parse(body);
+
+                client.setex(video_id, 21600, json.thumbnail_url );
+                request( json.thumbnail_url).pipe(res);
+            } else {
+                console.log(err, response);
+            }
+        });
+    }
 
 
     /**
@@ -139,7 +119,6 @@ var Stilleo = function() {
      */
     self.initialize = function() {
         self.setupVariables();
-        self.populateCache();
         self.setupTerminationHandlers();
 
         // Create the express server and routes.
