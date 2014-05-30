@@ -34,10 +34,11 @@ var Stilleo = function() {
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = "127.0.0.1";
 
-            client = redis.createClient()
+            client = redis.createClient();
         } else {
             client = redis.createClient( process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
             client.auth( process.env.REDIS_PASSWORD );
+            console.log("Password: ", process.env.REDIS_PASSWORD, process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
         }
     };
 
