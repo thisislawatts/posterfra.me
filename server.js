@@ -88,22 +88,33 @@ var Stilleo = function() {
         self.app.get(/^\/id\/(\d+)?$/, function(req, res) {
             var video_id = req.params[0];
 
-            client.get(video_id, function(err, result) {
-
-                if (err || !result) {
-                    console.log('Querying vimeo ID: ', video_id);
-                    self.queryVimeo( req, res, video_id );
-                } else {
-                    console.log("Redis works!", result);
-                    request(result).pipe(res);
-                }
-           })
+            self.fetchThumbnailById( req, res, video_id );
         })
 
-        self.app.get('/', function(req, res) {
-            req.write('Test');
+        self.app.use(function(req, res, next){
+
+            if (req.originalUrl.match(/https?:\/\/vimeo\.com/)) {
+                var video_id = req.originalUrl.split('/').pop();
+                
+                self.fetchThumbnailById( req, res, video_id );
+            } else {
+                next();
+            }
         });
     };
+
+    self.fetchThumbnailById = function(req, res, video_id) {
+        client.get(video_id, function(err, result) {
+
+            if (err || !result) {
+                console.log('Querying vimeo ID: ', video_id);
+                self.queryVimeo( req, res, video_id );
+            } else {
+                console.log("Redis works!", result);
+                request(result).pipe(res);
+            }
+       })
+    }
 
     self.queryVimeo = function( req, res, video_id ) {
        request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/' + video_id, function(err, response, body) {
