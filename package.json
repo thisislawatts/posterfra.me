@@ -1,7 +1,7 @@
 {
-  "name": "Stilleo",
+  "name": "Posterframe",
   "version": "1.0.0",
-  "description": "Stilleo Vimeo Application",
+  "description": "Posterframe for Vimeo videos",
   "keywords": [
     "OpenShift",
     "Node.js",
@@ -9,11 +9,11 @@
     "openshift"
   ],
   "author": {
-    "name": "OpenShift",
-    "email": "ramr@example.org",
-    "url": "http://www.openshift.com/"
+    "name": "Luke Watts",
+    "email": "luke@thisis.la",
+    "url": "http://thisis.la"
   },
-  "homepage": "http://www.openshift.com/",
+  "homepage": "http://www.github.com/thisislawatts",
   "repository": {
     "type": "git",
     "url": "https://github.com/openshift/origin-server"
