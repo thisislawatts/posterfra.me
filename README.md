@@ -3,6 +3,8 @@ Posterframe
 
 Tiny node service for grabbing the thumbnails for Vimeo content as unlike youtube they don't currently provide their own URL based service.
 
+eg: [http://www.posterfra.me/http://vimeo.com/3](http://www.posterfra.me/http://vimeo.com/3)
+
 
 ## Setting Up
 
