@@ -8,7 +8,7 @@ eg: [http://posterfra.me/http://vimeo.com/2](http://posterfra.me/http://vimeo.co
 
 ## Setting Up
 
-First up you`ll want to get [Redis](http://redis.io/) installed and [set up](http://redis.io/download) on your machine. Run `redis-server` to start it up in standalone mode.
+First up you'll want to get [Redis](http://redis.io/) installed and [set up](http://redis.io/download) on your machine. Run `redis-server` to start it up in standalone mode.
 
 Use `npm install` to install the dependencies, then `node server.js` to start the webservice. It will then be available via [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
