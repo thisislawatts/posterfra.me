@@ -83,47 +83,69 @@ var Stilleo = function() {
      */
     self.initializeServer = function() {
         self.app = express();
-
-        //  Add handlers for the app (from the routes).
-        self.app.get(/^\/id\/(\d+)?$/, function(req, res) {
-            var video_id = req.params[0];
-
-            self.fetchThumbnailById( req, res, video_id );
-        })
-
         self.app.use(function(req, res, next){
 
             if (req.originalUrl.match(/https?:\/\/vimeo\.com/)) {
-                var video_id = req.originalUrl.split('/').pop();
-                
-                self.fetchThumbnailById( req, res, video_id );
+                var props = self.getPropertiesFromURL( req.originalUrl );
+                console.log(props);
+                self.fetchThumbnailById( req, res, props );
             } else {
                 next();
             }
         });
     };
 
-    self.fetchThumbnailById = function(req, res, video_id) {
-        client.get(video_id, function(err, result) {
+    self.getPropertiesFromURL = function( url ) {
+        var parts = url.split('/'),
+            keys = ['id', 'width'],
+            props = {},
+            pointer = 0;
+
+        for (var i = 0; i < parts.length; i++) {
+
+            var n = parseInt( parts[i] );
+            
+            if (!isNaN(n)) {
+                props[keys[pointer]] = n;
+                pointer++;
+            }
+        }
+
+        return props;
+    }
+
+    self.fetchThumbnailById = function(req, res, properties ) {
+        client.get(properties.id, function(err, result) {
 
             if (err || !result) {
-                console.log('Querying vimeo ID: ', video_id);
-                self.queryVimeo( req, res, video_id );
+                console.log('Querying vimeo ID: ', properties.id);
+                self.queryVimeo( req, res, properties );
             } else {
-                console.log("Redis works!", result);
-                request(result).pipe(res);
+                console.log("Redis works!", result, properties );
+                request( self.resizeThumbnailByUrl( result, properties ) ).pipe(res);
             }
        })
     }
 
-    self.queryVimeo = function( req, res, video_id ) {
-       request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/' + video_id, function(err, response, body) {
+    self.resizeThumbnailByUrl = function ( thumbnail_url, properties ) {
+
+        if (properties.width)
+            thumbnail_url = thumbnail_url.replace(/\_\d+/, '_' + properties.width );
+
+        return thumbnail_url;
+    }
+
+    self.queryVimeo = function( req, res, properties ) {
+       request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/' + properties.id, function(err, response, body) {
             if ( !err && response.statusCode == 200 ) {
 
-                var json = JSON.parse(body);
+                var json = JSON.parse(body),
+                    thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url, properties );
 
-                client.setex(video_id, 21600, json.thumbnail_url );
-                request( json.thumbnail_url).pipe(res);
+                client.setex(properties.id, 21600, thumbnail_url );
+
+                console.log(thumbnail_url);
+                request( thumbnail_url ).pipe(res);
             } else {
                 console.log(err, response);
             }

@@ -2,9 +2,10 @@ Posterframe
 ===========
 
 Tiny node service for grabbing the thumbnails for Vimeo content as unlike youtube they don't currently provide their own URL based service.
+eg: [http://posterfra.me/http://vimeo.com/60573536](http://posterfra.me/http://vimeo.com/60573536)
 
-eg: [http://posterfra.me/http://vimeo.com/2](http://posterfra.me/http://vimeo.com/2)
-
+By default it will return whatever Vimeo's thumbnail size is, currently ~1280px. If you would like a different size, just add an additional parameter to the URL
+eg: [http://posterfra.me/http://vimeo.com/60573536/100](http://posterfra.me/http://vimeo.com/60573536/100)
 
 ## Setting Up
 
