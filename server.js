@@ -167,6 +167,7 @@ var Stilleo = function() {
                     }, function(err,res) {
                         if (err || !res) {
                             console.log(err, res);
+                            console.log(process.env.OPENSHIFT_NODEJS_IP);
                             throw err;
                         } 
 
