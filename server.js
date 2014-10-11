@@ -172,7 +172,10 @@ var Stilleo = function() {
 
                         if ( res.items.length ) {
                             console.log("Res", JSON.stringify(res) );
-                            var thumbnail_url = res.items.pop().snippet.thumbnails.maxres.url;
+                            var thumbnails = res.items.pop().snippet.thumbnails;
+                            var largest_thumbnail = thumbnails[ Object.keys(thumbnails)[Object.keys(thumbnails).length -  1]];
+                            console.log("Item thumbnails:", largest_thumbnail );
+                            var thumbnail_url = largest_thumbnail.url;
                             self.client.setex( youtube_id, 21600, thumbnail_url );
                             request( thumbnail_url ).pipe(res);
                         }
