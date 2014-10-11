@@ -101,7 +101,7 @@ var Stilleo = function() {
 
         self.app.use(function(req, res, next){
 
-            if (req.originalUrl.match(/https?:\/\/vimeo\.com/)) {
+            if (req.originalUrl.match(/vimeo\.com/)) {
                 var props = self.getPropertiesFromURL( req.originalUrl );
                 console.log(props);
                 self.fetchThumbnailById( req, res, props );
