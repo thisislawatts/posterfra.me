@@ -4,8 +4,23 @@ var express = require('express');
 var fs      = require('fs');
 var request = require('request');
 var redis   = require('redis');
+var youtube = require('youtube-api');
 var client;
 
+youtube.authenticate({
+    type: "key",
+    key: "AIzaSyCttKhXmxY0Q3xKH2Sf0p6qe7qTtgdXMBI"
+})
+
+/**
+ *
+ *
+ * TODO:
+ * [ ] Add Google serverr key as environmental var for openshift server
+ * [ ] Private Vimeo thumbnails
+ * [ ] Error checking on youtube API
+ * [ ] Error checking on Vimeo API
+ */
 
 /**
  *  Define the sample application.
@@ -34,10 +49,10 @@ var Stilleo = function() {
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = "127.0.0.1";
 
-            client = redis.createClient();
+            self.client = redis.createClient();
         } else {
-            client = redis.createClient( process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
-            client.auth( process.env.REDIS_PASSWORD );
+            self.client = redis.createClient( process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
+            self.client.auth( process.env.REDIS_PASSWORD );
             console.log("Password: ", process.env.REDIS_PASSWORD, process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
         }
     };
@@ -83,19 +98,29 @@ var Stilleo = function() {
      */
     self.initializeServer = function() {
         self.app = express();
+
         self.app.use(function(req, res, next){
+
+            console.log( req.originalUrl.match('youtube') );
 
             if (req.originalUrl.match(/https?:\/\/vimeo\.com/)) {
                 var props = self.getPropertiesFromURL( req.originalUrl );
                 console.log(props);
                 self.fetchThumbnailById( req, res, props );
+            } else if ( req.originalUrl.match(/youtube/) ) {
+                self.fetchYoutube( req, res );
             } else {
                 next();
             }
         });
+
+        self.app.get('/', function(req, res) {
+            res.sendfile('public/index.html');
+        });
     };
 
     self.getPropertiesFromURL = function( url ) {
+
         var parts = url.split('/'),
             keys = ['id', 'width'],
             props = {},
@@ -115,7 +140,7 @@ var Stilleo = function() {
     }
 
     self.fetchThumbnailById = function(req, res, properties ) {
-        client.get(properties.id, function(err, result) {
+        self.client.get(properties.id, function(err, result) {
 
             if (err || !result) {
                 console.log('Querying vimeo ID: ', properties.id);
@@ -125,6 +150,41 @@ var Stilleo = function() {
                 request( self.resizeThumbnailByUrl( result, properties ) ).pipe(res);
             }
        })
+    }
+
+    self.fetchYoutube = function(req, res, properties ) {
+        var id = req.originalUrl.match('v=([A-z0-9]+)');
+
+        if ( id ) {
+            var youtube_id = id.pop();
+
+            self.client.get( youtube_id, function(err, result) {
+                if (err || !result) {
+
+                    youtube.videos.list({
+                        part: 'id,snippet',
+                        id: '1k59gXTWf-A',
+                        userIp: '86.150.42.29'
+                    }, function(err,res) {
+                        if (err || !res) {
+                            console.log(err, res);
+                            throw err;
+                        } 
+
+                        if ( res.items.length ) {
+                            var thumbnail_url = res.items.pop().snippet.thumbnails.maxres.url;
+                            self.client.setex( youtube_id, 21600, thumbnail_url );
+                            request( thumbnail_url ).pipe(res);
+                        }
+                    })
+
+                    request( 'https://i.ytimg.com/vi/' + youtube_id + '/hqdefault.jpg' ).pipe(res);
+                } else {
+                    request( result ).pipe(res);
+                }
+            })
+        }
+
     }
 
     self.resizeThumbnailByUrl = function ( thumbnail_url, properties ) {
@@ -142,7 +202,7 @@ var Stilleo = function() {
                 var json = JSON.parse(body),
                     thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url, properties );
 
-                client.setex(properties.id, 21600, thumbnail_url );
+                self.client.setex(properties.id, 21600, thumbnail_url );
 
                 console.log(thumbnail_url);
                 request( thumbnail_url ).pipe(res);
