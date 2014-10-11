@@ -101,8 +101,6 @@ var Stilleo = function() {
 
         self.app.use(function(req, res, next){
 
-            console.log( req.originalUrl.match('youtube') );
-
             if (req.originalUrl.match(/https?:\/\/vimeo\.com/)) {
                 var props = self.getPropertiesFromURL( req.originalUrl );
                 console.log(props);
@@ -153,10 +151,12 @@ var Stilleo = function() {
     }
 
     self.fetchYoutube = function(req, res, properties ) {
-        var id = req.originalUrl.match('v=([A-z0-9\-]+)');
+        var ids = req.originalUrl.match('v=([A-z0-9\-]+)');
 
-        if ( id ) {
-            var youtube_id = id.pop();
+        console.log("Fetching Youtube", ids );
+
+        if ( ids ) {
+            var youtube_id = ids.pop();
 
             self.client.get( youtube_id, function(err, result) {
                 if (err || !result) {
@@ -171,7 +171,7 @@ var Stilleo = function() {
                         } 
 
                         if ( res.items.length ) {
-                            console.log(res.items[0].snippet.thumbnails);
+                            console.log("Res", JSON.stringify(res) );
                             var thumbnail_url = res.items.pop().snippet.thumbnails.maxres.url;
                             self.client.setex( youtube_id, 21600, thumbnail_url );
                             request( thumbnail_url ).pipe(res);
