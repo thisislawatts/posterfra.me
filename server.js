@@ -171,13 +171,13 @@ var Stilleo = function() {
                         } 
 
                         if ( res.items.length ) {
+                            console.log(res.items[0].snippet.thumbnails);
                             var thumbnail_url = res.items.pop().snippet.thumbnails.maxres.url;
                             self.client.setex( youtube_id, 21600, thumbnail_url );
                             request( thumbnail_url ).pipe(res);
                         }
                     })
 
-                    request( 'https://i.ytimg.com/vi/' + youtube_id + '/hqdefault.jpg' ).pipe(res);
                 } else {
                     request( result ).pipe(res);
                 }
