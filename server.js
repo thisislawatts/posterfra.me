@@ -153,7 +153,7 @@ var Stilleo = function() {
     }
 
     self.fetchYoutube = function(req, res, properties ) {
-        var id = req.originalUrl.match('v=([A-z0-9]+)');
+        var id = req.originalUrl.match('v=([A-z0-9\-]+)');
 
         if ( id ) {
             var youtube_id = id.pop();
@@ -163,8 +163,7 @@ var Stilleo = function() {
 
                     youtube.videos.list({
                         part: 'id,snippet',
-                        id: '1k59gXTWf-A',
-                        userIp: '86.150.42.29'
+                        id: youtube_id,
                     }, function(err,res) {
                         if (err || !res) {
                             console.log(err, res);
