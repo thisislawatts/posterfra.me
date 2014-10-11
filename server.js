@@ -164,26 +164,28 @@ var Stilleo = function() {
                     youtube.videos.list({
                         part: 'id,snippet',
                         id: youtube_id,
-                    }, function(err,res) {
-                        if (err || !res) {
-                            console.log(err, res);
+                    }, function(err,data) {
+                        if (err || !data) {
+                            console.log(err, data);
                             console.log(process.env.OPENSHIFT_NODEJS_IP);
                             throw err;
                         } 
 
-                        if ( res.items.length ) {
-                            console.log("Res", JSON.stringify(res) );
-                            var thumbnails = res.items.pop().snippet.thumbnails;
+                        if ( data.items.length ) {
+                            console.log("data", JSON.stringify(data) );
+                            var thumbnails = data.items.pop().snippet.thumbnails;
                             var largest_thumbnail = thumbnails[ Object.keys(thumbnails)[Object.keys(thumbnails).length -  1]];
-                            console.log("Item thumbnails:", largest_thumbnail );
-                            var thumbnail_url = largest_thumbnail.url;
-                            self.client.setex( youtube_id, 21600, thumbnail_url );
-                            request( thumbnail_url ).pipe(res);
+
+                            self.client.setex( youtube_id, 21600, largest_thumbnail.url );
+
+                            request.get( largest_thumbnail.url ).pipe(res);
+
                         }
                     })
 
                 } else {
-                    request( result ).pipe(res);
+                    console.log("Loading via Redis:", result );
+                    request.get( result ).pipe(res);
                 }
             })
         }
