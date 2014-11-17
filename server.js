@@ -103,8 +103,7 @@ var Stilleo = function() {
 
             if (req.originalUrl.match(/vimeo\.com/)) {
                 var props = self.getPropertiesFromURL( req.originalUrl );
-                console.log(props);
-                self.fetchThumbnailById( req, res, props );
+                self.fetchVimeo( req, res, props );
             } else if ( req.originalUrl.match(/youtube/) ) {
                 self.fetchYoutube( req, res );
             } else {
@@ -116,6 +115,10 @@ var Stilleo = function() {
             res.sendfile('public/index.html');
         });
     };
+
+    self.overrideCache = function( url ) {
+        return url.match(/^\/force/).length >= 1;
+    }
 
     self.getPropertiesFromURL = function( url ) {
 
@@ -137,10 +140,10 @@ var Stilleo = function() {
         return props;
     }
 
-    self.fetchThumbnailById = function(req, res, properties ) {
+    self.fetchVimeo = function(req, res, properties ) {
         self.client.get(properties.id, function(err, result) {
 
-            if (err || !result) {
+            if (err || !result || self.overrideCache(req.originalUrl)) {
                 console.log('Querying vimeo ID: ', properties.id);
                 self.queryVimeo( req, res, properties );
             } else {
@@ -153,13 +156,11 @@ var Stilleo = function() {
     self.fetchYoutube = function(req, res, properties ) {
         var ids = req.originalUrl.match('v=([A-z0-9\-]+)');
 
-        console.log("Fetching Youtube", ids );
-
         if ( ids ) {
             var youtube_id = ids.pop();
 
             self.client.get( youtube_id, function(err, result) {
-                if (err || !result) {
+                if (err || !result || self.overrideCache(req.originalUrl) ) {
 
                     youtube.videos.list({
                         part: 'id,snippet',
