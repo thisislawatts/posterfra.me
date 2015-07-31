@@ -9,7 +9,8 @@ var client;
 
 youtube.authenticate({
     type: "key",
-    key: "AIzaSyCttKhXmxY0Q3xKH2Sf0p6qe7qTtgdXMBI"
+    key: "AIzaSyCttKhXmxY0Q3xKH2Sf0p6qe7qTtgdXMBI",
+    userIp: '123.123.123.1'
 })
 
 /**
@@ -117,7 +118,9 @@ var Stilleo = function() {
     };
 
     self.overrideCache = function( url ) {
-        return url.match(/^\/force/).length >= 1;
+        var matches = url.match(/^\/force/);
+
+        return matches ? true : false;
     }
 
     self.getPropertiesFromURL = function( url ) {
@@ -143,6 +146,8 @@ var Stilleo = function() {
     self.fetchVimeo = function(req, res, properties ) {
         self.client.get(properties.id, function(err, result) {
 
+            console.log('Original URL:', req.originalUrl );
+
             if (err || !result || self.overrideCache(req.originalUrl)) {
                 console.log('Querying vimeo ID: ', properties.id);
                 self.queryVimeo( req, res, properties );
@@ -158,6 +163,8 @@ var Stilleo = function() {
 
         if ( ids ) {
             var youtube_id = ids.pop();
+
+            console.log('Original URL:', req.originalUrl );
 
             self.client.get( youtube_id, function(err, result) {
                 if (err || !result || self.overrideCache(req.originalUrl) ) {
