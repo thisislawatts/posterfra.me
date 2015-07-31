@@ -26,6 +26,7 @@
     "express": "~3.4.4",
     "redis": "~0.10.3",
     "request": "~2.36.0",
+    "serve-static": "^1.10.0",
     "youtube-api": "^0.3.1"
   },
   "bundleDependencies": [],

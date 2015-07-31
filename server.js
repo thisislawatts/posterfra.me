@@ -5,6 +5,7 @@ var fs      = require('fs');
 var request = require('request');
 var redis   = require('redis');
 var youtube = require('youtube-api');
+var serverStatic = require('serve-static');
 var client;
 
 youtube.authenticate({
@@ -99,6 +100,8 @@ var Stilleo = function() {
      */
     self.initializeServer = function() {
         self.app = express();
+
+        self.app.use(serverStatic('public/'));
 
         self.app.use(function(req, res, next){
 

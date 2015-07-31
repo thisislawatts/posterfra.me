@@ -7,10 +7,16 @@
 	<title>Posterfra.me</title>
 
 	<script type="text/javascript" src="http://fast.fonts.net/jsapi/5eef4006-1f6a-493e-9ede-8182da0c18eb.js"></script>
+	<link href="/css/prism.css" rel="stylesheet" />
 	<style>
 		* {
 			color: #111;
 			font-family:'Univers LT W01 45 Light', sans-serif;
+		}
+
+		img {
+			height: auto;
+			max-width: 100%;
 		}
 
 		body {
@@ -18,19 +24,25 @@
 		}
 
 		h1 {
+			line-height: 1.3;
 			font-size: 1.2em;
 			font-weight: normal;
-			margin-bottom: 2em;
+			margin-bottom: .5em;
+		}
+
+		h2 {
+			font-size: 1em;
+			font-weight: normal;
+			line-height: 1.3;
+			margin: 0 0 2em;
 		}
 
 		code {
-			background: #eee;
 			display: block;
-			font-family: monospace;
-			padding: 1em;
+			font-family: Consolas, Monaco, 'Andale Mono', 'Lucida Console', monospace;
 			width: auto;
 			max-width: 58em;
-			margin-bottom: 1em;
+			font-size: .9rem;
 		}
 
 		p {
@@ -49,23 +61,32 @@
 			text-decoration: none;
 		}
 
+		figure {
+			margin: 1.5em 0 4em;
+		}
 
+			figure p:before {
+				content: "\2014 ";
+				display: inline-block;
+				margin: 0 .5em 0 2em;
+			}
 
 	</style>
 </head>
 <body>
 <h1>posterfra.me</h1>
+<h2>A teeny micro service for quickly grabbing a vimeo thumbnail for videos.</h2>
 
-<p>A teeny micro service for quickly grabbing a vimeo thumbnail for videos.</p>
+<pre><code class="language-html">&lt;img src="http://www.posterfra.me/https://vimeo.com/134728824" alt="Palace - Head Above Water"/&gt;</code></pre>
 
-<code>&lt;img src="http://www.posterfra.me/https://vimeo.com/134728824" alt="Palace - Head Above Water"/&gt;</code>
-
-<img src="http://www.posterfra.me/https://vimeo.com/134728824" alt="Vimeo"/>
-<p>Palace - Head Above Water via <a href="http://twitter.com/@colonelblimp">@colonelblimp</a></p>
+<figure>
+	<img src="http://www.posterfra.me/https://vimeo.com/134728824" alt="Vimeo"/>
+	<p>Palace - Head Above Water via <a href="http://twitter.com/@colonelblimp">@colonelblimp</a></p>
+</figure>
 
 <h2>Reliability</h2>
 
-<p>The site runs on the <a href="https://www.openshift.com">Openshift</a> platform, for industry grade performance. We actively monitor the site using <a href="http://statuscake.com">StatusCake</a>, they are currently reporting <img src="https://www.statuscake.com/App/button/index.php?Track=bZSPdcKyTK&Days=30&Design=5" alt="Status Cake Uptime Statistics"/> for the last&nbsp;30 days.</p>
+<p>The site runs on the <a href="https://www.openshift.com">Openshift</a> platform, for industry grade performance. We actively monitor the site using <a href="http://statuscake.com">StatusCake</a>, they are currently reporting <img src="https://www.statuscake.com/App/button/index.php?Track=bZSPdcKyTK&Days=30&Design=5" alt="Status Cake Uptime Statistics"/> over the last&nbsp;30 days.</p>
 
 <p>We're currently using it across half a dozen of our own web properties, so regardless of whether you use it. We're invested in keeping it up and running.</p>
 
@@ -73,5 +94,7 @@
 <a href="http://bcmh.build">Bravo Charlie Mike Hotel</a>
 </p>
 
+
+<script src="/js/prism.js"></script>
 </body>
 </html>
