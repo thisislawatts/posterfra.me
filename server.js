@@ -9,9 +9,15 @@ var youtube = require('youtube-api');
 var serverStatic = require('serve-static');
 var client;
 
+require('dotenv').config({silent: true});
+
+if (!process.env.GOOGLE_API_KEY) {
+    console.warn('No GOOGLE_API_KEY var available, unable to query Youtube');
+}
+
 youtube.authenticate({
     type   : 'key',
-    key    : process.env.GOOGLE_API_KEY || 'AIzaSyCttKhXmxY0Q3xKH2Sf0p6qe7qTtgdXMBI',
+    key    : process.env.GOOGLE_API_KEY,
     userIp : '123.123.123.1'
 });
 
