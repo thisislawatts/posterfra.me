@@ -2,12 +2,10 @@
 'use strict';
 
 var express = require('express');
-var fs      = require('fs');
 var request = require('request');
 var redis   = require('redis');
 var youtube = require('youtube-api');
 var serverStatic = require('serve-static');
-var client;
 
 require('dotenv').config({silent: true});
 
@@ -42,17 +40,17 @@ var Stilleo = function() {
         self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
         self.port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
-        if (typeof self.ipaddress === "undefined") {
+        if (typeof self.ipaddress === 'undefined') {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
             //  allows us to run/test the app locally.
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
-            self.ipaddress = "127.0.0.1";
+            self.ipaddress = '127.0.0.1';
 
             self.client = redis.createClient();
         } else {
             self.client = redis.createClient( process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
             self.client.auth( process.env.REDIS_PASSWORD );
-            console.log("Password: ", process.env.REDIS_PASSWORD, process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
+            console.log('Password: ', process.env.REDIS_PASSWORD, process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
         }
     };
 
@@ -62,7 +60,7 @@ var Stilleo = function() {
      *  @param {string} sig  Signal to terminate on.
      */
     self.terminator = function(sig){
-        if (typeof sig === "string") {
+        if (typeof sig === 'string') {
            console.log('%s: Received %s - terminating sample app ...',
                        Date(Date.now()), sig);
            process.exit(1);
@@ -81,7 +79,7 @@ var Stilleo = function() {
         // Removed 'SIGPIPE' from the list - bugz 852598.
         ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
          'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
-        ].forEach(function(element, index, array) {
+        ].forEach(function(element) {
             process.on(element, function() { self.terminator(element); });
         });
     };
@@ -121,7 +119,7 @@ var Stilleo = function() {
         var matches = url.match(/^\/force/);
 
         return matches ? true : false;
-    }
+    };
 
     self.getPropertiesFromURL = function( url ) {
 
@@ -141,7 +139,7 @@ var Stilleo = function() {
         }
 
         return props;
-    }
+    };
 
     self.fetchVimeo = function(req, res, properties ) {
         self.client.get(properties.id, function(err, result) {
@@ -152,14 +150,14 @@ var Stilleo = function() {
                 console.log('Querying vimeo ID: ', properties.id);
                 self.queryVimeo( req, res, properties );
             } else {
-                console.log("Redis works!", result, properties );
+                console.log('Redis works!', result, properties );
                 request( self.resizeThumbnailByUrl( result, properties ) ).pipe(res);
             }
-       })
-    }
+       });
+    };
 
-    self.fetchYoutube = function(req, res, properties ) {
-        var ids = req.originalUrl.match('v=([A-z0-9\-]+)');
+    self.fetchYoutube = function(req, res ) {
+        var ids = req.originalUrl.match('v=([A-z0-9-]+)');
 
         if ( ids ) {
             var youtube_id = ids.pop();
@@ -180,7 +178,7 @@ var Stilleo = function() {
                         } 
 
                         if ( data.items.length ) {
-                            console.log("data", JSON.stringify(data) );
+                            console.log('data', JSON.stringify(data) );
                             var thumbnails = data.items.pop().snippet.thumbnails;
                             var largest_thumbnail = thumbnails[ Object.keys(thumbnails)[Object.keys(thumbnails).length -  1]];
 
@@ -189,16 +187,15 @@ var Stilleo = function() {
                             request.get( largest_thumbnail.url ).pipe(res);
 
                         }
-                    })
+                    });
 
                 } else {
-                    console.log("Loading via Redis:", result );
+                    console.log('Loading via Redis:', result );
                     request.get( result ).pipe(res);
                 }
-            })
+            });
         }
-
-    }
+    };
 
     self.resizeThumbnailByUrl = function ( thumbnail_url, properties ) {
 
@@ -206,7 +203,7 @@ var Stilleo = function() {
             thumbnail_url = thumbnail_url.replace(/\_\d+/, '_' + properties.width );
 
         return thumbnail_url;
-    }
+    };
 
     self.queryVimeo = function( req, res, properties ) {
        request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/' + properties.id, function(err, response, body) {
@@ -223,7 +220,7 @@ var Stilleo = function() {
                 console.log(err, response);
             }
         });
-    }
+    };
 
 
     /**
