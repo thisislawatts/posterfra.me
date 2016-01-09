@@ -22,15 +22,6 @@ youtube.authenticate({
 });
 
 /**
- *
- *
- * TODO:
- * [ ] Private Vimeo thumbnails
- * [ ] Error checking on youtube API
- * [ ] Error checking on Vimeo API
- */
-
-/**
  *  Define the sample application.
  */
 var Stilleo = function() {

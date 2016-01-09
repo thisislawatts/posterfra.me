@@ -1,7 +1,7 @@
 {
   "name": "Posterframe",
   "version": "1.0.0",
-  "description": "Posterframe for Vimeo videos",
+  "description": "Posterframe for Vimeo/Youtube videos",
   "keywords": [
     "OpenShift",
     "Node.js",
