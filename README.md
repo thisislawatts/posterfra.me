@@ -17,6 +17,12 @@ Use `npm install` to install the dependencies, then `node server.js` to start th
 
 I've got it running on Openshift's application platform, find out more information can be found about their `nodejs` [cartridge documentation](https://github.com/openshift/origin-server/tree/master/cartridges/openshift-origin-cartridge-nodejs/README.md).
 
+Set up a Google API key and add it to the Openshift Environment
+```
+$ rhc env set GOOGLE_API_KEY=<apiKey> -a <appname>
+```
+
+
 
 ## Changelog
 

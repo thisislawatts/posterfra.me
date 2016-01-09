@@ -1,4 +1,5 @@
 #!/bin/env node
+'use strict';
 
 var express = require('express');
 var fs      = require('fs');
@@ -9,16 +10,15 @@ var serverStatic = require('serve-static');
 var client;
 
 youtube.authenticate({
-    type: "key",
-    key: "AIzaSyCttKhXmxY0Q3xKH2Sf0p6qe7qTtgdXMBI",
-    userIp: '123.123.123.1'
-})
+    type   : 'key',
+    key    : process.env.GOOGLE_API_KEY || 'AIzaSyCttKhXmxY0Q3xKH2Sf0p6qe7qTtgdXMBI',
+    userIp : '123.123.123.1'
+});
 
 /**
  *
  *
  * TODO:
- * [ ] Add Google serverr key as environmental var for openshift server
  * [ ] Private Vimeo thumbnails
  * [ ] Error checking on youtube API
  * [ ] Error checking on Vimeo API
