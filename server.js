@@ -130,7 +130,7 @@ var Stilleo = function() {
 
         for (var i = 0; i < parts.length; i++) {
 
-            var n = parseInt( parts[i] );
+            var n = parseInt( parts[i], 10 );
             
             if (!isNaN(n)) {
                 props[keys[pointer]] = n;
@@ -169,7 +169,7 @@ var Stilleo = function() {
 
                     youtube.videos.list({
                         part: 'id,snippet',
-                        id: youtube_id,
+                        id: youtube_id
                     }, function(err,data) {
                         if (err || !data) {
                             console.log(err, data);
@@ -207,7 +207,7 @@ var Stilleo = function() {
 
     self.queryVimeo = function( req, res, properties ) {
        request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/' + properties.id, function(err, response, body) {
-            if ( !err && response.statusCode == 200 ) {
+            if ( !err && response.statusCode === 200 ) {
 
                 var json = JSON.parse(body),
                     thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url, properties );
