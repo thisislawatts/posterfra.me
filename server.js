@@ -63,7 +63,7 @@ var Stilleo = function() {
         if (typeof sig === 'string') {
            console.log('%s: Received %s - terminating sample app ...',
                        Date(Date.now()), sig);
-           process.exit(1);
+           process.exit();
         }
         console.log('%s: Node server stopped.', Date(Date.now()) );
     };
