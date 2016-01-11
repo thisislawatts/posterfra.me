@@ -103,7 +103,7 @@ var Stilleo = function() {
             if (req.originalUrl.match(/vimeo\.com/)) {
                 var props = self.getPropertiesFromURL( req.originalUrl );
                 self.fetchVimeo( req, res, props );
-            } else if ( req.originalUrl.match(/youtube/) ) {
+            } else if ( req.originalUrl.match(/youtube|youtu\.be/) ) {
                 self.fetchYoutube( req, res );
             } else {
                 next();
@@ -159,10 +159,16 @@ var Stilleo = function() {
     self.fetchYoutube = function(req, res ) {
         var ids = req.originalUrl.match('v=([A-z0-9-]+)');
 
+
+        if ( ids === null ) {
+            ids = [req.originalUrl.split('/').pop()];
+        }
+
         if ( ids ) {
             var youtube_id = ids.pop();
 
             console.log('Original URL:', req.originalUrl );
+            console.log('Youtube ID:', youtube_id );
 
             self.client.get( youtube_id, function(err, result) {
                 if (err || !result || self.overrideCache(req.originalUrl) ) {
@@ -194,6 +200,8 @@ var Stilleo = function() {
                     request.get( result ).pipe(res);
                 }
             });
+        } else {
+            console.warn('Error fetching:', req.originalUrl );
         }
     };
 
