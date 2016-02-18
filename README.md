@@ -1,6 +1,8 @@
 Posterframe
 ===========
 
+[![Code Climate](https://codeclimate.com/github/bcmh/posterfra.me/badges/gpa.svg)](https://codeclimate.com/github/bcmh/posterfra.me)
+
 Tiny node service for grabbing the thumbnails for Vimeo content as unlike youtube they don't currently provide their own URL based service.
 eg: [http://posterfra.me/http://vimeo.com/60573536](http://posterfra.me/http://vimeo.com/60573536)
 
