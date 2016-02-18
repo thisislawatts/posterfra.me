@@ -131,7 +131,7 @@ var Stilleo = function() {
         for (var i = 0; i < parts.length; i++) {
 
             var n = parseInt( parts[i], 10 );
-            
+
             if (!isNaN(n)) {
                 props[keys[pointer]] = n;
                 pointer++;
@@ -151,7 +151,7 @@ var Stilleo = function() {
                 self.queryVimeo( req, res, properties );
             } else {
                 console.log('Redis works!', result, properties );
-                request( self.resizeThumbnailByUrl( result, properties ) ).pipe(res);
+                res.redirect( self.resizeThumbnailByUrl( result, properties ));
             }
        });
     };
@@ -181,7 +181,7 @@ var Stilleo = function() {
                             console.log(err, data);
                             console.log(process.env.OPENSHIFT_NODEJS_IP);
                             throw err;
-                        } 
+                        }
 
                         if ( data.items.length ) {
                             console.log('data', JSON.stringify(data) );
@@ -190,14 +190,14 @@ var Stilleo = function() {
 
                             self.client.setex( youtube_id, 21600, largest_thumbnail.url );
 
-                            request.get( largest_thumbnail.url ).pipe(res);
+                            res.redirect( largest_thumbnail.url );
 
                         }
                     });
 
                 } else {
                     console.log('Loading via Redis:', result );
-                    request.get( result ).pipe(res);
+                    res.redirect(result);
                 }
             });
         } else {
@@ -223,7 +223,7 @@ var Stilleo = function() {
                 self.client.setex(properties.id, 21600, thumbnail_url );
 
                 console.log(thumbnail_url);
-                request( thumbnail_url ).pipe(res);
+                res.redirect( thumbnail_url );
             } else {
                 console.log(err, response);
             }
