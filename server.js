@@ -184,7 +184,7 @@ var Stilleo = function() {
                         }
 
                         if ( data.items.length ) {
-                            console.log('data', JSON.stringify(data) );
+
                             var thumbnails = data.items.pop().snippet.thumbnails;
                             var largest_thumbnail = thumbnails[ Object.keys(thumbnails)[Object.keys(thumbnails).length -  1]];
 
@@ -218,7 +218,7 @@ var Stilleo = function() {
             if ( !err && response.statusCode === 200 ) {
 
                 var json = JSON.parse(body),
-                    thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url, properties );
+                    thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url.replace(/_[0-9x]+/,''), properties );
 
                 self.client.setex(properties.id, 21600, thumbnail_url );
 
