@@ -1,13 +1,15 @@
 #!/bin/env node
 'use strict';
 
-var express = require('express');
-var request = require('request');
-var redis   = require('redis');
-var youtube = require('youtube-api');
-var serverStatic = require('serve-static');
+const express = require('express');
+const request = require('request');
+const redis   = require('redis');
+const youtube = require('youtube-api');
+const serverStatic = require('serve-static');
 
-require('dotenv').config({silent: true});
+require('dotenv').config({
+    silent : true
+});
 
 if (!process.env.GOOGLE_API_KEY) {
     console.warn('No GOOGLE_API_KEY var available, unable to query Youtube');
@@ -22,7 +24,7 @@ youtube.authenticate({
 /**
  *  Define the sample application.
  */
-var Stilleo = function() {
+var Posterframe = function() {
 
     //  Scope.
     var self = this;
@@ -254,13 +256,12 @@ var Stilleo = function() {
         });
     };
 
-};   /*  Stilleo Application.  */
-
+};   /*  Posterframe Application.  */
 
 
 /**
  *  main():  Main code.
  */
-var zapp = new Stilleo();
-zapp.initialize();
-zapp.start();
+var app = new Posterframe();
+app.initialize();
+app.start();
