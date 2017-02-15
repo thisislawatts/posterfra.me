@@ -6,8 +6,7 @@ Posterframe
 Tiny node service for grabbing the thumbnails for Vimeo content as unlike youtube they don't currently provide their own URL based service.
 eg: [http://posterfra.me/http://vimeo.com/60573536](http://posterfra.me/http://vimeo.com/60573536)
 
-By default it will return whatever Vimeo's thumbnail size is, currently ~1280px. If you would like a different size, just add an additional parameter to the URL
-eg: [http://posterfra.me/http://vimeo.com/60573536/100](http://posterfra.me/http://vimeo.com/60573536/100)
+By default it will return whatever Vimeo's thumbnail size is, currently ~1280px.
 
 ### Setting Up
 
@@ -27,19 +26,7 @@ I've got it running on Openshift's application platform, find out more informati
 Set up a Google API key and add it to the Openshift Environment
 ```
 $ rhc env set GOOGLE_API_KEY=<apiKey> -a <appname>
-```
-
-### TODO
- * Private Vimeo thumbnails
- * Error checking on youtube API
- * Error checking on Vimeo API
- * tests/
-
-### Future
-
-* Fallback server for deployments
-* `/api` endpoint to return JSON object about the Video
- 
+``` 
 
 ### Changelog
 
