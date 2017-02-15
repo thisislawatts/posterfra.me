@@ -1,6 +1,4 @@
 #!/bin/env node
-'use strict';
-
 const express = require('express');
 const request = require('request');
 const redis   = require('redis');
