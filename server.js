@@ -225,7 +225,7 @@ var Posterframe = function() {
        request('http://vimeo.com/api/oembed.json?url=http://vimeo.com/' + properties.id, function(err, response, body) {
             if ( !err && response.statusCode === 200 ) {
                 var json = JSON.parse(body),
-                    thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url.replace(/_[0-9x]+/,''), properties );
+                    thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url.replace(/_[0-9x]+/,''), req.query );
 
                 self.client.setex(properties.id, 21600, thumbnail_url );
                 console.log(thumbnail_url);
