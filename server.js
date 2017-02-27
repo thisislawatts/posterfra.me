@@ -5,6 +5,7 @@ const redis   = require('redis');
 const youtube = require('youtube-api');
 const serverStatic = require('serve-static');
 const imgix = require('imgix-core-js');
+const url = require('url');
 
 require('dotenv').config({
     silent: true
@@ -12,13 +13,15 @@ require('dotenv').config({
 
 if (!process.env.GOOGLE_API_KEY) {
     console.warn('No GOOGLE_API_KEY var available, unable to query Youtube');
+} else {
+    console.log('Authenticating Youtube')
+    youtube.authenticate({
+        type: 'key',
+        key: process.env.GOOGLE_API_KEY,
+        userIp: '123.123.123.1'
+    });
 }
 
-youtube.authenticate({
-    type: 'key',
-    key: process.env.GOOGLE_API_KEY,
-    userIp: '123.123.123.1'
-});
 
 /**
  *  Define the sample application.
@@ -46,6 +49,8 @@ var Posterframe = function() {
             //  allows us to run/test the app locally.
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = '127.0.0.1';
+            console.log('Redis: ', process.env.REDIS_URL);
+            console.log('Parsed:', url.parse(process.env.REDIS_URL));
             self.client = redis.createClient(process.env.REDIS_URL);
 
         } else {
