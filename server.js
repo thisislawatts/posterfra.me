@@ -50,7 +50,7 @@ var Posterframe = function() {
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = '127.0.0.1';
             redisInfo = url.parse(process.env.REDIS_URL);
-            console.log('Redis: ', redisInfo);
+            console.log('Redis URL: ', redisInfo.href);
             self.client = redis.createClient({
                 // host: redisInfo.host,
                 // port: redisInfo.port,
