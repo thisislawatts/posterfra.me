@@ -100,6 +100,8 @@ var Posterframe = function() {
     self.initializeServer = function() {
         self.app = express();
 
+        self.app.set('port', (process.env.PORT || 8080));
+
         self.app.use(serverStatic('public/'));
 
         self.app.use(function(req, res, next){
@@ -257,7 +259,7 @@ var Posterframe = function() {
      */
     self.start = function() {
         //  Start the app on the specific interface (and port).
-        self.app.listen(self.port, self.ipaddress, function() {
+        self.app.listen(self.app.get('port'), function() {
             console.log('%s: Node server started on http://%s:%d ...',
                         Date(Date.now() ), self.ipaddress, self.port);
         });
