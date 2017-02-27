@@ -49,8 +49,7 @@ var Posterframe = function() {
             self.client = redis.createClient(process.env.REDIS_URL);
 
         } else {
-            self.client = redis.createClient( process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
-            self.client.auth( process.env.REDIS_PASSWORD );
+            self.client = redis.createClient(process.env.REDIS_URL);
             console.log('Password: ', process.env.REDIS_PASSWORD, process.env.OPENSHIFT_REDIS_PORT, process.env.OPENSHIFT_REDIS_HOST );
         }
     };
