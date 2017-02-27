@@ -49,9 +49,13 @@ var Posterframe = function() {
             //  allows us to run/test the app locally.
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = '127.0.0.1';
-            console.log('Redis: ', process.env.REDIS_URL);
-            console.log('Parsed:', url.parse(process.env.REDIS_URL));
-            self.client = redis.createClient(process.env.REDIS_URL);
+            redisInfo = url.parse(process.env.REDIS_URL);
+            console.log('Redis: ', redisInfo);
+            self.client = redis.createClient({
+                host: redisInfo.host,
+                port: redisInfo.port,
+                url: process.env.REDIS_URL
+            });
 
         } else {
             self.client = redis.createClient(process.env.REDIS_URL);
