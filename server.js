@@ -52,9 +52,9 @@ var Posterframe = function() {
             redisInfo = url.parse(process.env.REDIS_URL);
             console.log('Redis: ', redisInfo);
             self.client = redis.createClient({
-                host: redisInfo.host,
-                port: redisInfo.port,
-                url: process.env.REDIS_URL
+                // host: redisInfo.host,
+                // port: redisInfo.port,
+                url: redisInfo.href
             });
 
         } else {
