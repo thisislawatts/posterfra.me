@@ -38,11 +38,7 @@ var Posterframe = function() {
 
     redisInfo = url.parse(process.env.REDIS_URL);
     console.log('Redis URL: ', redisInfo.href);
-    self.client = redis.createClient({
-        host: redisInfo.host,
-        port: redisInfo.port,
-        // url: redisInfo.href
-    });
+    self.client = redis.createClient(process.env.REDIS_URL);
 
     /**
      *  Set up server IP address and port # using env variables/defaults.
