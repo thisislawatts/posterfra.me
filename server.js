@@ -150,6 +150,14 @@ var Posterframe = function() {
         return props;
     };
 
+    self.respond = function(res, url, originalRequestUrl) {
+        if (originalRequestUrl.match(/^\/p|pipe/)) {
+            return request(url).pipe(res);
+        }
+
+        return res.redirect( url );
+    }
+
     self.fetchVimeo = function(req, res, properties ) {
         self.client.get(properties.id, function(err, result) {
             console.log('Original URL:', req.originalUrl );
@@ -158,8 +166,7 @@ var Posterframe = function() {
                 console.log('Querying vimeo ID: ', properties.id);
                 self.queryVimeo( req, res, properties );
             } else {
-                console.log('Redis works!', result, properties );
-                res.redirect( self.resizeThumbnailByUrl( result, req.query ));
+                self.respond( res, self.resizeThumbnailByUrl( result, req.query ), req.originalUrl);
             }
        });
     };
@@ -191,20 +198,17 @@ var Posterframe = function() {
                         }
 
                         if ( data.items.length ) {
-
                             var thumbnails = data.items.pop().snippet.thumbnails;
                             var largest_thumbnail = thumbnails[ Object.keys(thumbnails)[Object.keys(thumbnails).length -  1]];
 
                             self.client.setex( youtube_id, 21600, largest_thumbnail.url );
-
-                            res.redirect( largest_thumbnail.url );
-
+                            self.respond(res, largest_thumbnail.url, req.originalUrl);
                         }
                     });
 
                 } else {
                     console.log('Loading via Redis:', result );
-                    res.redirect(result);
+                    self.respond(res, result, req.originalUrl);
                 }
             });
         } else {
@@ -214,7 +218,7 @@ var Posterframe = function() {
 
     self.resizeThumbnailByUrl = function ( thumbnail_url, properties ) {
 
-        console.log('Imgix credentials present?', !process.env.IMGIX_HOST_URL, !process.env.IMGIX_SECURE_URL_TOKEN );
+        console.log('Imgix credentials present?', process.env.IMGIX_HOST_URL, process.env.IMGIX_SECURE_URL_TOKEN );
 
         if (Object.keys(properties).length === 0 || (!process.env.IMGIX_HOST_URL || !process.env.IMGIX_SECURE_URL_TOKEN)) {
             return thumbnail_url;
@@ -232,12 +236,11 @@ var Posterframe = function() {
     self.queryVimeo = function( req, res, properties ) {
        request('https://vimeo.com/api/oembed.json?url=http://vimeo.com/' + properties.id, function(err, response, body) {
             if ( !err && response.statusCode === 200 ) {
-                var json = JSON.parse(body),
-                    thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url.replace(/_[0-9x]+/,''), req.query );
+                var json = JSON.parse(body);
+                var thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url.replace(/_[0-9x]+/,''), req.query );
 
                 self.client.setex(properties.id, 21600, thumbnail_url );
-                console.log(thumbnail_url);
-                res.redirect( thumbnail_url );
+                self.respond(res, thumbnail_url, req.originalUrl );
             } else {
                 console.log(err, response);
             }
