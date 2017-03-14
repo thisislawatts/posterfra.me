@@ -122,7 +122,10 @@ var Posterframe = function() {
     };
 
     self.overrideCache = function( url ) {
-        var matches = url.match(/^\/force/);
+        var matches = url.match(/^\/force|f/);
+
+
+        console.log('Override cache?', matches );
 
         return matches ? true : false;
     };
