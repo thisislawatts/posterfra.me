@@ -1,5 +1,5 @@
 Posterframe
-===========
+====
 
 [![Code Climate](https://codeclimate.com/github/bcmh/posterfra.me/badges/gpa.svg)](https://codeclimate.com/github/bcmh/posterfra.me)
 
@@ -14,9 +14,11 @@ First up you'll want to get [Redis](http://redis.io/) installed and [set up](htt
 
 Use `npm install` to install the dependencies, then `node server.js` to start the webservice. It will then be available via [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
-You should also create
-```
+You should also create a `.env` file to contain your environmental variables
 
+```
+IMGIX_HOST_URL=xxx.imgix.net
+IMGIX_SECURE_URL_TOKEN=xxx123
 ```
 
 ### Deployment
@@ -26,7 +28,7 @@ I've got it running on Openshift's application platform, find out more informati
 Set up a Google API key and add it to the Openshift Environment
 ```
 $ rhc env set GOOGLE_API_KEY=<apiKey> -a <appname>
-``` 
+```
 
 ### Changelog
 
