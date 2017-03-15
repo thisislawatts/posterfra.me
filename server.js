@@ -238,8 +238,7 @@ var Posterframe = function() {
             if ( !err && response.statusCode === 200 ) {
                 var json = JSON.parse(body);
                 var thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url.replace(/_[0-9x]+/,''), req.query );
-
-                self.client.setex(properties.id, 21600, thumbnail_url );
+                self.client.setex(properties.id, 21600, json.thumbnail_url.replace(/_[0-9x]+/,'') );
                 self.respond(res, thumbnail_url, req.originalUrl );
             } else {
                 console.log(err, response);
