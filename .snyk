@@ -3,6 +3,26 @@ version: v1.12.0
 ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
+  'npm:hoek:20180212':
+    - youtube-api > googleapis > google-auth-library > request > hawk > boom > hoek:
+        patched: '2018-07-06T16:36:20.985Z'
+    - youtube-api > googleapis > request > hawk > hoek:
+        patched: '2018-07-06T16:36:20.985Z'
+    - youtube-api > googleapis > request > hawk > sntp > hoek:
+        patched: '2018-07-06T16:36:20.985Z'
+    - youtube-api > googleapis > request > hawk > cryptiles > boom > hoek:
+        patched: '2018-07-06T16:36:20.985Z'
+    - youtube-api > googleapis > google-auth-library > request > hawk > hoek:
+        patched: '2018-07-06T16:36:20.985Z'
+    - youtube-api > googleapis > request > hawk > boom > hoek:
+        patched: '2018-07-06T16:36:20.985Z'
+    - youtube-api > googleapis > google-auth-library > request > hawk > sntp > hoek:
+        patched: '2018-07-06T16:36:20.985Z'
+    - youtube-api > googleapis > google-auth-library > request > hawk > cryptiles > boom > hoek:
+        patched: '2018-07-06T16:36:20.985Z'
+  'npm:tough-cookie:20170905':
+    - youtube-api > googleapis > request > tough-cookie:
+        patched: '2018-07-06T16:36:20.985Z'
   'npm:tunnel-agent:20170305':
-    - youtube-api > googleapis > request > tunnel-agent:
-        patched: '2018-07-06T16:35:43.060Z'
+    - youtube-api > googleapis > google-auth-library > request > tunnel-agent:
+        patched: '2018-07-06T16:36:20.985Z'
