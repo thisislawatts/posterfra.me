@@ -10,7 +10,9 @@
   ],
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": {
     "name": "Luke Watts",
@@ -28,17 +30,19 @@
   },
   "dependencies": {
     "dotenv": "^1.2.0",
-    "express": "~3.4.4",
+    "express": "~4.16.0",
     "imgix-core-js": "^1.0.4",
     "redis": "^2.6.5",
-    "request": "~2.36.0",
+    "request": "~2.82.0",
     "serve-static": "^1.10.0",
-    "youtube-api": "^0.3.1"
+    "youtube-api": "^2.0.0",
+    "snyk": "^1.88.1"
   },
   "bundleDependencies": [],
   "private": true,
   "main": "server.js",
   "devDependencies": {
     "nodemon": "^1.11.0"
-  }
+  },
+  "snyk": true
 }
