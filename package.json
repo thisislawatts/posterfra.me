@@ -33,7 +33,7 @@
     "express": "~3.4.4",
     "imgix-core-js": "^1.0.4",
     "redis": "^2.6.5",
-    "request": "~2.36.0",
+    "request": "~2.84.0",
     "serve-static": "^1.10.0",
     "youtube-api": "^0.3.1",
     "snyk": "^1.88.1"
