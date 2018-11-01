@@ -22,16 +22,3 @@ GOOGLE_API_KEY=abc123
 IMGIX_HOST_URL=xxx.imgix.net
 IMGIX_SECURE_URL_TOKEN=xxx123
 ```
-
-### Deployment
-
-I've got it running on Openshift's application platform, find out more information can be found about their `nodejs` [cartridge documentation](https://github.com/openshift/origin-server/tree/master/cartridges/openshift-origin-cartridge-nodejs/README.md).
-
-Set up a Google API key and add it to the Openshift Environment
-```
-$ rhc env set GOOGLE_API_KEY=<apiKey> -a <appname>
-```
-
-### Changelog
-
-Version 1.0.0 - Intial Release
