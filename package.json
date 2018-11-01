@@ -19,13 +19,13 @@
     "email": "luke@thisis.la",
     "url": "http://thisis.la"
   },
-  "homepage": "https://github.com/bcmh/posterfra.me/",
+  "homepage": "https://github.com/thisislawatts/posterfra.me/",
   "repository": {
     "type": "git",
     "url": "https://github.com/openshift/origin-server"
   },
   "engines": {
-    "node": ">= 4.6.0",
+    "node": ">= 10.0.0",
     "npm": ">= 1.0.0"
   },
   "dependencies": {
@@ -34,9 +34,10 @@
     "imgix-core-js": "^1.0.4",
     "redis": "^2.6.5",
     "request": "~2.36.0",
+    "rollbar": "^2.5.0",
     "serve-static": "^1.10.0",
-    "youtube-api": "^0.3.1",
-    "snyk": "^1.88.1"
+    "snyk": "^1.88.1",
+    "youtube-api": "^0.3.1"
   },
   "bundleDependencies": [],
   "private": true,

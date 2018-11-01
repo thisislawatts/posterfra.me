@@ -14,9 +14,11 @@ First up you'll want to get [Redis](http://redis.io/) installed and [set up](htt
 
 Use `npm install` to install the dependencies, then `node server.js` to start the webservice. It will then be available via [http://127.0.0.1:8080](http://127.0.0.1:8080).
 
-You should also create a `.env` file to contain your environmental variables
+You should also create a `.env` file to contain your environmental variables. Each of which are optional:
 
 ```
+ROLLBAR_ACCESS_TOKEN=abc123
+GOOGLE_API_KEY=abc123
 IMGIX_HOST_URL=xxx.imgix.net
 IMGIX_SECURE_URL_TOKEN=xxx123
 ```

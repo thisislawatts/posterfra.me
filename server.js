@@ -6,6 +6,23 @@ const youtube = require('youtube-api');
 const serverStatic = require('serve-static');
 const imgix = require('imgix-core-js');
 
+const Rollbar = require("rollbar");
+
+if (process.env.ROLLBAR_ACCESS_TOKEN) {
+    const logger = new Rollbar({
+        accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+        captureUncaught: true,
+        captureUnhandledRejections: true
+    });
+    logger.log('Logging to rollbar');
+} else {
+    const logger = console;
+    logger.log('Logging to console');
+}
+
+
+
+
 require('dotenv').config({
     silent: true
 });
@@ -21,6 +38,8 @@ if (!process.env.GOOGLE_API_KEY) {
     });
 }
 
+const imgixNotAvailable = !process.env.IMGIX_HOST_URL || !process.env.IMGIX_SECURE_URL_TOKEN;
+console.log('Imgix is unavailable?', imgixNotAvailable );
 
 /**
  *  Define the sample application.
@@ -105,6 +124,10 @@ var Posterframe = function() {
         self.app.use(serverStatic('public/'));
 
         self.app.use(function(req, res, next){
+            rollbar.log(`Request audit:`, {
+                originalUrl: req.originalUrl,
+                referrer: req.headers.referrer,
+            } );
 
             if (req.originalUrl.match(/vimeo\.com/)) {
                 var props = self.getPropertiesFromURL( req.originalUrl );
@@ -184,43 +207,55 @@ var Posterframe = function() {
             console.log('Original URL:', req.originalUrl );
             console.log('Youtube ID:', youtube_id );
 
-            self.client.get( youtube_id, function(err, result) {
-                if (err || !result || self.overrideCache(req.originalUrl) ) {
+            try {
+                self.client.get( youtube_id, function(err, result) {
+                    if (err || !result || self.overrideCache(req.originalUrl) ) {
+    
+                        youtube.videos.list({
+                            part: 'id,snippet',
+                            id: youtube_id
+                        }, function(err,data) {
+                            if (err || !data) {
+                                rollbar.error(`Error response from youtube`, {err, data});
+                                throw err;
+                            }
 
-                    youtube.videos.list({
-                        part: 'id,snippet',
-                        id: youtube_id
-                    }, function(err,data) {
-                        if (err || !data) {
-                            console.log(err, data);
-                            console.log(process.env.OPENSHIFT_NODEJS_IP);
-                            throw err;
-                        }
-
-                        if ( data.items.length ) {
-                            var thumbnails = data.items.pop().snippet.thumbnails;
-                            var largest_thumbnail = thumbnails[ Object.keys(thumbnails)[Object.keys(thumbnails).length -  1]];
-
-                            self.client.setex( youtube_id, 21600, largest_thumbnail.url );
-                            self.respond(res, largest_thumbnail.url, req.originalUrl);
-                        }
-                    });
-
-                } else {
-                    console.log('Loading via Redis:', result );
-                    self.respond(res, result, req.originalUrl);
-                }
-            });
+                            if (!data.items.length) {
+                                rollbar.error('Empty response from youtube', {
+                                    youtubeId: youtube_id,
+                                    data,
+                                });
+                                return res.sendfile('public/images/static.png');
+                            }
+    
+                            if ( data.items.length ) {
+                                var thumbnails = data.items.pop().snippet.thumbnails;
+                                var largest_thumbnail = thumbnails[ Object.keys(thumbnails)[Object.keys(thumbnails).length -  1]];
+    
+                                self.client.setex( youtube_id, 21600, largest_thumbnail.url );
+                                self.respond(res, largest_thumbnail.url, req.originalUrl);
+                            }
+                        });    
+                    } else {
+                        console.log('Loading via Redis:', result );
+                        self.respond(res, result, req.originalUrl);
+                    }
+                });
+            } catch (error) {
+                rollbar.error('Error fetching Youtube video', {
+                    youtubeId: youtube_id,
+                    error,
+                })
+            }
         } else {
-            console.warn('Error fetching:', req.originalUrl );
+            rollbar.warn('Error fetching youtube URL:', {
+                originalUrl: req.originalUrl,
+            } );
         }
     };
 
     self.resizeThumbnailByUrl = function ( thumbnail_url, properties ) {
-
-        console.log('Imgix credentials present?', process.env.IMGIX_HOST_URL, process.env.IMGIX_SECURE_URL_TOKEN );
-
-        if (Object.keys(properties).length === 0 || (!process.env.IMGIX_HOST_URL || !process.env.IMGIX_SECURE_URL_TOKEN)) {
+        if (Object.keys(properties).length === 0 || imgixNotAvailable) {
             return thumbnail_url;
         }
 
@@ -235,13 +270,31 @@ var Posterframe = function() {
 
     self.queryVimeo = function( req, res, properties ) {
        request('https://vimeo.com/api/oembed.json?url=http://vimeo.com/' + properties.id, function(err, response, body) {
-            if ( !err && response.statusCode === 200 ) {
+           console.log(`Response`, {err, response, body});
+            if (err && response.statusCode !== 200) {
+                console.log(`Error fetching oEmbed`, {err, response});
+                return res.statusCode(400);
+            }
+
+            try {
                 var json = JSON.parse(body);
+                rollbar.log(`Query vimeo reponse`, {json});
+
+                if (!json.thumbnail_url) {
+                    rollbar.warn('Failed to find thumbnail in vimeo response', {
+                        json,
+                    });
+                    return res.sendfile('public/images/static.png');
+                }
+
                 var thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url.replace(/_[0-9x]+/,''), req.query );
                 self.client.setex(properties.id, 21600, json.thumbnail_url.replace(/_[0-9x]+/,'') );
                 self.respond(res, thumbnail_url, req.originalUrl );
-            } else {
-                console.log(err, response);
+            } catch (error) {
+                console.log('Failed to parse vimeo response', {
+                    error,
+                    json,
+                })
             }
         });
     };
