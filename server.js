@@ -6,31 +6,30 @@ const youtube = require('youtube-api');
 const serverStatic = require('serve-static');
 const imgix = require('imgix-core-js');
 
-const Rollbar = require("rollbar");
+const Rollbar = require('rollbar');
+
+let logger;
 
 if (process.env.ROLLBAR_ACCESS_TOKEN) {
-    const logger = new Rollbar({
+    logger = new Rollbar({
         accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
         captureUncaught: true,
         captureUnhandledRejections: true
     });
     logger.log('Logging to rollbar');
 } else {
-    const logger = console;
+    logger = console;
     logger.log('Logging to console');
 }
-
-
-
 
 require('dotenv').config({
     silent: true
 });
 
 if (!process.env.GOOGLE_API_KEY) {
-    console.warn('No GOOGLE_API_KEY var available, unable to query Youtube');
+    logger.warn('No GOOGLE_API_KEY var available, unable to query Youtube');
 } else {
-    console.log('Authenticating Youtube')
+    logger.log('Authenticating Youtube');
     youtube.authenticate({
         type: 'key',
         key: process.env.GOOGLE_API_KEY,
@@ -39,7 +38,7 @@ if (!process.env.GOOGLE_API_KEY) {
 }
 
 const imgixNotAvailable = !process.env.IMGIX_HOST_URL || !process.env.IMGIX_SECURE_URL_TOKEN;
-console.log('Imgix is unavailable?', imgixNotAvailable );
+logger.log('Imgix is unavailable?', imgixNotAvailable );
 
 /**
  *  Define the sample application.
@@ -63,17 +62,16 @@ var Posterframe = function() {
         self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
         self.port      = process.env.PORT || 8080;
 
-            self.client = redis.createClient(process.env.REDIS_URL).on('error', function(e) {
-                console.log('Redis Error:', e);
-            });
+        self.client = redis.createClient(process.env.REDIS_URL).on('error', function(e) {
+            logger.log('Redis Error:', e);
+        });
 
         if (typeof self.ipaddress === 'undefined') {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
             //  allows us to run/test the app locally.
-            console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
+            logger.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = '127.0.0.1';
 
-        } else {
         }
     };
 
@@ -84,11 +82,11 @@ var Posterframe = function() {
      */
     self.terminator = function(sig){
         if (typeof sig === 'string') {
-           console.log('%s: Received %s - terminating sample app ...',
-                       Date(Date.now()), sig);
-           process.exit();
+            logger.log('%s: Received %s - terminating sample app ...',
+                Date(Date.now()), sig);
+            process.exit();
         }
-        console.log('%s: Node server stopped.', Date(Date.now()) );
+        logger.log('%s: Node server stopped.', Date(Date.now()) );
     };
 
 
@@ -101,7 +99,7 @@ var Posterframe = function() {
 
         // Removed 'SIGPIPE' from the list - bugz 852598.
         ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
-         'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
+            'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
         ].forEach(function(element) {
             process.on(element, function() { self.terminator(element); });
         });
@@ -124,7 +122,7 @@ var Posterframe = function() {
         self.app.use(serverStatic('public/'));
 
         self.app.use(function(req, res, next){
-            rollbar.log(`Request audit:`, {
+            logger.log('Request audit:', {
                 originalUrl: req.originalUrl,
                 referrer: req.headers.referrer,
             } );
@@ -148,7 +146,7 @@ var Posterframe = function() {
         var matches = url.match(/^\/force|f/);
 
 
-        console.log('Override cache?', matches );
+        logger.log('Override cache?', matches );
 
         return matches ? true : false;
     };
@@ -179,19 +177,19 @@ var Posterframe = function() {
         }
 
         return res.redirect( url );
-    }
+    };
 
     self.fetchVimeo = function(req, res, properties ) {
         self.client.get(properties.id, function(err, result) {
-            console.log('Original URL:', req.originalUrl );
+            logger.log('Original URL:', req.originalUrl );
 
             if (err || !result || self.overrideCache(req.originalUrl)) {
-                console.log('Querying vimeo ID: ', properties.id);
+                logger.log('Querying vimeo ID: ', properties.id);
                 self.queryVimeo( req, res, properties );
             } else {
                 self.respond( res, self.resizeThumbnailByUrl( result, req.query ), req.originalUrl);
             }
-       });
+        });
     };
 
     self.fetchYoutube = function(req, res ) {
@@ -204,8 +202,8 @@ var Posterframe = function() {
         if ( ids ) {
             var youtube_id = ids.pop();
 
-            console.log('Original URL:', req.originalUrl );
-            console.log('Youtube ID:', youtube_id );
+            logger.log('Original URL:', req.originalUrl );
+            logger.log('Youtube ID:', youtube_id );
 
             try {
                 self.client.get( youtube_id, function(err, result) {
@@ -216,12 +214,12 @@ var Posterframe = function() {
                             id: youtube_id
                         }, function(err,data) {
                             if (err || !data) {
-                                rollbar.error(`Error response from youtube`, {err, data});
+                                logger.error('Error response from youtube', {err, data});
                                 throw err;
                             }
 
                             if (!data.items.length) {
-                                rollbar.error('Empty response from youtube', {
+                                logger.error('Empty response from youtube', {
                                     youtubeId: youtube_id,
                                     data,
                                 });
@@ -237,18 +235,18 @@ var Posterframe = function() {
                             }
                         });    
                     } else {
-                        console.log('Loading via Redis:', result );
+                        logger.log('Loading via Redis:', result );
                         self.respond(res, result, req.originalUrl);
                     }
                 });
             } catch (error) {
-                rollbar.error('Error fetching Youtube video', {
+                logger.error('Error fetching Youtube video', {
                     youtubeId: youtube_id,
                     error,
-                })
+                });
             }
         } else {
-            rollbar.warn('Error fetching youtube URL:', {
+            logger.warn('Error fetching youtube URL:', {
                 originalUrl: req.originalUrl,
             } );
         }
@@ -269,19 +267,19 @@ var Posterframe = function() {
     };
 
     self.queryVimeo = function( req, res, properties ) {
-       request('https://vimeo.com/api/oembed.json?url=http://vimeo.com/' + properties.id, function(err, response, body) {
-           console.log(`Response`, {err, response, body});
+        request('https://vimeo.com/api/oembed.json?url=http://vimeo.com/' + properties.id, function(err, response, body) {
+            logger.log('Response', {err, response, body});
             if (err && response.statusCode !== 200) {
-                console.log(`Error fetching oEmbed`, {err, response});
+                logger.log('Error fetching oEmbed', {err, response});
                 return res.statusCode(400);
             }
 
             try {
                 var json = JSON.parse(body);
-                rollbar.log(`Query vimeo reponse`, {json});
+                logger.log('Query vimeo reponse', {json});
 
                 if (!json.thumbnail_url) {
-                    rollbar.warn('Failed to find thumbnail in vimeo response', {
+                    logger.warn('Failed to find thumbnail in vimeo response', {
                         json,
                     });
                     return res.sendfile('public/images/static.png');
@@ -291,10 +289,10 @@ var Posterframe = function() {
                 self.client.setex(properties.id, 21600, json.thumbnail_url.replace(/_[0-9x]+/,'') );
                 self.respond(res, thumbnail_url, req.originalUrl );
             } catch (error) {
-                console.log('Failed to parse vimeo response', {
+                logger.log('Failed to parse vimeo response', {
                     error,
                     json,
-                })
+                });
             }
         });
     };
@@ -318,8 +316,8 @@ var Posterframe = function() {
     self.start = function() {
         //  Start the app on the specific interface (and port).
         self.app.listen(self.app.get('port'), function() {
-            console.log('%s: Node server started on http://%s:%d ...',
-                        Date(Date.now() ), self.ipaddress, self.port);
+            logger.log('%s: Node server started on http://%s:%d ...',
+                Date(Date.now() ), self.ipaddress, self.port);
         });
     };
 

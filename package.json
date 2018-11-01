@@ -12,7 +12,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "prepare": "npm run snyk-protect",
+    "lint": "eslint -c=.eslintrc.json *.js"
   },
   "author": {
     "name": "Luke Watts",
@@ -30,6 +31,7 @@
   },
   "dependencies": {
     "dotenv": "^1.2.0",
+    "eslint": "^5.8.0",
     "express": "~3.4.4",
     "imgix-core-js": "^1.0.4",
     "redis": "^2.6.5",
