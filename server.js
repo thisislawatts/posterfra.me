@@ -1,26 +1,15 @@
 #!/bin/env node
+const NodeCache = require('node-cache');
 const express = require('express');
 const request = require('request');
-const redis   = require('redis');
 const youtube = require('youtube-api');
 const serverStatic = require('serve-static');
 const imgix = require('imgix-core-js');
 
-const Rollbar = require('rollbar');
+const cache = new NodeCache( { stdTTL: 100, checkperiod: 120 } );;
 
-let logger;
-
-if (process.env.ROLLBAR_ACCESS_TOKEN) {
-    logger = new Rollbar({
-        accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
-        captureUncaught: true,
-        captureUnhandledRejections: true
-    });
-    logger.log('Logging to rollbar');
-} else {
-    logger = console;
-    logger.log('Logging to console');
-}
+const logger = console;
+logger.log('Logging to console');
 
 require('dotenv').config({
     silent: true
@@ -62,9 +51,7 @@ var Posterframe = function() {
         self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
         self.port      = process.env.PORT || 8080;
 
-        self.client = redis.createClient(process.env.REDIS_URL).on('error', function(e) {
-            logger.log('Redis Error:', e);
-        });
+        const redisUrl = process.env.REDIS_URL || process.env.REDISHOST || 'localhost';
 
         if (typeof self.ipaddress === 'undefined') {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
@@ -180,7 +167,7 @@ var Posterframe = function() {
     };
 
     self.fetchVimeo = function(req, res, properties ) {
-        self.client.get(properties.id, function(err, result) {
+        cache.get(properties.id, function(err, result) {
             logger.log('Original URL:', req.originalUrl );
 
             if (err || !result || self.overrideCache(req.originalUrl)) {
@@ -206,9 +193,9 @@ var Posterframe = function() {
             logger.log('Youtube ID:', youtube_id );
 
             try {
-                self.client.get( youtube_id, function(err, result) {
+                cache.get( youtube_id, function(err, result) {
                     if (err || !result || self.overrideCache(req.originalUrl) ) {
-    
+
                         youtube.videos.list({
                             part: 'id,snippet',
                             id: youtube_id
@@ -225,15 +212,15 @@ var Posterframe = function() {
                                 });
                                 return res.sendfile('public/images/static.png');
                             }
-    
+
                             if ( data.items.length ) {
                                 var thumbnails = data.items.pop().snippet.thumbnails;
                                 var largest_thumbnail = thumbnails[ Object.keys(thumbnails)[Object.keys(thumbnails).length -  1]];
-    
-                                self.client.setex( youtube_id, 21600, largest_thumbnail.url );
+
+                                cache.set( youtube_id, largest_thumbnail.url );
                                 self.respond(res, largest_thumbnail.url, req.originalUrl);
                             }
-                        });    
+                        });
                     } else {
                         logger.log('Loading via Redis:', result );
                         self.respond(res, result, req.originalUrl);
@@ -286,7 +273,7 @@ var Posterframe = function() {
                 }
 
                 var thumbnail_url = self.resizeThumbnailByUrl( json.thumbnail_url.replace(/_[0-9x]+/,''), req.query );
-                self.client.setex(properties.id, 21600, json.thumbnail_url.replace(/_[0-9x]+/,'') );
+                cache.set(properties.id, json.thumbnail_url.replace(/_[0-9x]+/,'') );
                 self.respond(res, thumbnail_url, req.originalUrl );
             } catch (error) {
                 logger.log('Failed to parse vimeo response', {
@@ -327,6 +314,6 @@ var Posterframe = function() {
 /**
  *  main():  Main code.
  */
-var app = new Posterframe();
+const app = new Posterframe();
 app.initialize();
 app.start();

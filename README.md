@@ -22,3 +22,11 @@ GOOGLE_API_KEY=abc123
 IMGIX_HOST_URL=xxx.imgix.net
 IMGIX_SECURE_URL_TOKEN=xxx123
 ```
+
+### Deploying
+
+Hosted on `gcloud`
+
+```bash
+gcloud app deploy
+```
