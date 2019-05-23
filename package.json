@@ -30,7 +30,7 @@
     "npm": ">= 1.0.0"
   },
   "dependencies": {
-    "dotenv": "^1.2.0",
+    "dotenv": "^8.0.0",
     "eslint": "^5.8.0",
     "express": "~3.4.4",
     "imgix-core-js": "^1.0.4",
