@@ -32,7 +32,7 @@
   "dependencies": {
     "dotenv": "^1.2.0",
     "eslint": "^5.8.0",
-    "express": "~3.4.4",
+    "express": "~3.11.0",
     "imgix-core-js": "^1.0.4",
     "redis": "^2.6.5",
     "request": "~2.36.0",
