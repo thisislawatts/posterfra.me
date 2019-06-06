@@ -33,7 +33,7 @@
     "dotenv": "^1.2.0",
     "eslint": "^5.8.0",
     "express": "~3.4.4",
-    "imgix-core-js": "^1.0.4",
+    "imgix-core-js": "^1.4.0",
     "redis": "^2.6.5",
     "request": "~2.36.0",
     "rollbar": "^2.5.0",
