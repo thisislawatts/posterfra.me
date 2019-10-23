@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.12.0
+version: v1.13.5
 ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
@@ -26,3 +26,24 @@ patch:
   'npm:tunnel-agent:20170305':
     - youtube-api > googleapis > google-auth-library > request > tunnel-agent:
         patched: '2018-07-06T16:36:20.985Z'
+    - youtube-api > googleapis > request > tunnel-agent:
+        patched: '2019-10-23T15:33:07.712Z'
+  SNYK-JS-LODASH-450202:
+    - snyk > snyk-php-plugin > lodash:
+        patched: '2019-10-23T15:33:07.712Z'
+    - snyk > snyk-config > lodash:
+        patched: '2019-10-23T15:33:07.712Z'
+    - snyk > snyk-nuget-plugin > lodash:
+        patched: '2019-10-23T15:33:07.712Z'
+    - snyk > lodash:
+        patched: '2019-10-23T15:33:07.712Z'
+    - snyk > snyk-go-plugin > graphlib > lodash:
+        patched: '2019-10-23T15:33:07.712Z'
+    - eslint > lodash:
+        patched: '2019-10-23T15:33:07.712Z'
+    - eslint > inquirer > lodash:
+        patched: '2019-10-23T15:33:07.712Z'
+    - eslint > table > lodash:
+        patched: '2019-10-23T15:33:07.712Z'
+    - snyk > inquirer > lodash:
+        patched: '2019-10-23T15:33:07.712Z'
