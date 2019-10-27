@@ -4,9 +4,9 @@ const url = require("url");
 const errorThumbnail =
   "https://storage.googleapis.com/posterframe-assets/static.png";
 
-exports.handler = async function (req, res) {
-
-  const vimeoUrl = url.parse(req.path.replace(/^\//, ""));
+exports.handler = async function (event) {
+  console.log({event});
+  const vimeoUrl = url.parse(event.path.replace(/^\//, ""));
     if (!vimeoUrl.path) {
       return redirect(errorThumbnail);
     }
@@ -19,7 +19,7 @@ exports.handler = async function (req, res) {
 
   // console.log(`Referer:`, req.get("Referer"));
 
-  if (/vimeo/.test(req.path) === false) {
+  if (/vimeo/.test(event.path) === false) {
     return redirect(errorThumbnail);
   }
 
@@ -40,7 +40,7 @@ function redirect(destination) {
   return {
     statusCode: 301,
     headers: {
-      Location: destination,
+      Location: destination
     }
   }
 }
