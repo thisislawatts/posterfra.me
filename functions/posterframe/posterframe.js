@@ -4,13 +4,7 @@ const url = require("url");
 const errorThumbnail =
   "https://storage.googleapis.com/posterframe-assets/static.png";
 
-/**
- * Responds to any HTTP request.
- *
- * @param {!express:Request} req HTTP request context.
- * @param {!express:Response} res HTTP response context.
- */
-exports.handler = async (req, res) => {
+exports.handler = async function (req, res) {
 
   const vimeoUrl = url.parse(req.path.replace(/^\//, ""));
     if (!vimeoUrl.path) {
