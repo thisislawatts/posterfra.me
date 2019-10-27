@@ -8,7 +8,7 @@ exports.handler = async function (req, res) {
 
   const vimeoUrl = url.parse(req.path.replace(/^\//, ""));
     if (!vimeoUrl.path) {
-      return res.redirect(errorThumbnail);
+      return redirect(errorThumbnail);
     }
   const vimeoEndpoint =
     "https://vimeo.com/api/oembed.json?url=" +
@@ -20,7 +20,7 @@ exports.handler = async function (req, res) {
   // console.log(`Referer:`, req.get("Referer"));
 
   if (/vimeo/.test(req.path) === false) {
-    return res.redirect(errorThumbnail);
+    return redirect(errorThumbnail);
   }
 
   try {
@@ -28,10 +28,19 @@ exports.handler = async function (req, res) {
       ? response.body.thumbnail_url.replace(/_[0-9x]+/, "")
       : errorThumbnail;
 
-    return res.redirect(thumbnailUrl);
+    return redirect(thumbnailUrl);
   } catch (error) {
-    return res.json({
+    return json({
       error
     });
   }
 };
+
+function redirect(destination) {
+  return {
+    statusCode: 301,
+    headers: {
+      Location: destination,
+    }
+  }
+}
