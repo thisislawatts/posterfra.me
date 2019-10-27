@@ -1,0 +1,3 @@
+[build]
+  functions = "functions"
+  NODE_ENV = "10.15.3"
