@@ -17,7 +17,7 @@ exports.handler = async function (req, res) {
     vimeoUrl.path.replace(/\D/g, "");
   const response = await needle("get", vimeoEndpoint);
 
-  console.log(`Referer:`, req.get("Referer"));
+  // console.log(`Referer:`, req.get("Referer"));
 
   if (/vimeo/.test(req.path) === false) {
     return res.redirect(errorThumbnail);
