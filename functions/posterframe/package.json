@@ -2,9 +2,8 @@
   "name": "posterframe",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "posterframe.js",
   "scripts": {
-    "start": "functions-framework --target=fetchVimeo",
     "test": "jest",
     "lint": "prettier --check './*.js'"
   },

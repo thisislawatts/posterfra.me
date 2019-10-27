@@ -1,0 +1,20 @@
+{
+  "name": "posterfra.me",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "cd functions/posterframe && npm i"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thisislawatts/posterfra.me.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thisislawatts/posterfra.me/issues"
+  },
+  "homepage": "https://github.com/thisislawatts/posterfra.me#readme"
+}
