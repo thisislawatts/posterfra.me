@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prebuild": "cd functions/posterframe && npm i",
+    "prebuild": "cd functions/posterframe && npm install",
     "test": "cd functions/posterframe && npm test"
   },
   "repository": {
