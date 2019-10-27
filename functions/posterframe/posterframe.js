@@ -5,16 +5,14 @@ const errorThumbnail =
   "https://storage.googleapis.com/posterframe-assets/static.png";
 
 exports.handler = async function (event) {
-  console.log({event});
-  const vimeoUrl = url.parse(event.path.replace(/^\//, ""));
-    if (!vimeoUrl.path) {
-      return redirect(errorThumbnail);
-    }
+  const vimeoUrl = event.path.match(/vimeo.com\/[0-9]+/);
+  if (!vimeoUrl) {
+    return redirect(errorThumbnail);
+  }
   const vimeoEndpoint =
     "https://vimeo.com/api/oembed.json?url=" +
-    vimeoUrl.protocol +
-    "//vimeo.com/" +
-    vimeoUrl.path.replace(/\D/g, "");
+    "https://vimeo.com/" +
+    vimeoUrl[0].replace(/\D/g, "");
   const response = await needle("get", vimeoEndpoint);
 
   // console.log(`Referer:`, req.get("Referer"));
