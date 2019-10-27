@@ -5,7 +5,6 @@ const errorThumbnail =
   "/error";
 
 exports.handler = async function (event, context) {
-  console.log({context, event})
   const vimeoUrl = event.path.match(/vimeo.com\/[0-9]+/);
   if (!vimeoUrl) {
     return redirect(errorThumbnail);
