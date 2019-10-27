@@ -9,6 +9,11 @@
   status = 200
 
 [[redirects]]
+  from = "/error"
+  to = "./static.png"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/.netlify/functions/posterframe/:splat"
   status = 200
