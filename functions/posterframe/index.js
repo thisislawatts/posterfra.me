@@ -10,7 +10,7 @@ const errorThumbnail =
  * @param {!express:Request} req HTTP request context.
  * @param {!express:Response} res HTTP response context.
  */
-exports.fetchVimeo = async (req, res) => {
+exports.handler = async (req, res) => {
 
   const vimeoUrl = url.parse(req.path.replace(/^\//, ""));
     if (!vimeoUrl.path) {
