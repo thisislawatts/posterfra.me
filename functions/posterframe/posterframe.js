@@ -2,7 +2,7 @@ const needle = require("needle");
 const url = require("url");
 
 const errorThumbnail =
-  "https://storage.googleapis.com/posterframe-assets/static.png";
+  "/error";
 
 exports.handler = async function (event, context) {
   console.log({context, event})
