@@ -1,0 +1,29 @@
+[build]
+  command = "npm run prebuild"
+  functions = "functions"
+  NODE_ENV = "10.15.3"
+
+[[redirects]]
+  from = "/"
+  to = "./index.html"
+  status = 200
+
+[[redirects]]
+  from = "/error"
+  to = "./static.png"
+  status = 200
+
+[[redirects]]
+  from = "/css/*"
+  to = "./css/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/js/*"
+  to = "./js/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/posterframe/:splat"
+  status = 200

@@ -1,51 +1,21 @@
 {
-  "name": "Posterframe",
-  "version": "1.1.0",
-  "description": "Posterframe for Vimeo/Youtube videos",
-  "keywords": [
-    "OpenShift",
-    "Node.js",
-    "application",
-    "openshift"
-  ],
+  "name": "posterfra.me",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect",
-    "lint": "eslint -c=.eslintrc.json *.js"
+    "prebuild": "cd functions/posterframe && npm install",
+    "test": "cd functions/posterframe && npm test"
   },
-  "author": {
-    "name": "Luke Watts",
-    "email": "luke@thisis.la",
-    "url": "http://thisis.la"
-  },
-  "homepage": "https://github.com/thisislawatts/posterfra.me/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openshift/origin-server"
+    "url": "git+https://github.com/thisislawatts/posterfra.me.git"
   },
-  "engines": {
-    "node": ">= 10.0.0",
-    "npm": ">= 1.0.0"
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thisislawatts/posterfra.me/issues"
   },
-  "dependencies": {
-    "dotenv": "^1.2.0",
-    "eslint": "^5.8.0",
-    "express": "~3.4.4",
-    "imgix-core-js": "^1.0.4",
-    "redis": "^2.6.5",
-    "request": "~2.36.0",
-    "rollbar": "^2.5.0",
-    "serve-static": "^1.10.0",
-    "snyk": "^1.88.1",
-    "youtube-api": "^0.3.1"
-  },
-  "bundleDependencies": [],
-  "private": true,
-  "main": "server.js",
-  "devDependencies": {
-    "nodemon": "^1.11.0"
-  },
-  "snyk": true
+  "homepage": "https://github.com/thisislawatts/posterfra.me#readme"
 }
