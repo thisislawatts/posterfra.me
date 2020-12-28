@@ -5,7 +5,8 @@
   "main": "posterframe.js",
   "scripts": {
     "test": "jest",
-    "lint": "prettier --check './*.js'"
+    "lint": "prettier --check './*.js'",
+    "format": "prettier --write './*.js'"
   },
   "keywords": [],
   "author": "",
