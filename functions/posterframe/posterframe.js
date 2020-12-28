@@ -13,7 +13,7 @@ exports.handler = async function(event, context) {
     vimeoUrl[0].replace(/\D/g, "");
   const response = await needle("get", vimeoEndpoint);
 
-  console.log(`Referer:`, event);
+  console.log(`Referer:`, event.headers.referer);
   console.log(`Video:`, event.path);
 
   if (/vimeo/.test(event.path) === false) {
