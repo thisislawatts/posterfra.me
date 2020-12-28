@@ -1,10 +1,8 @@
 const needle = require("needle");
-const url = require("url");
 
-const errorThumbnail =
-  "/error";
+const errorThumbnail = "/error";
 
-exports.handler = async function (event, context) {
+exports.handler = async function(event, context) {
   const vimeoUrl = event.path.match(/vimeo.com\/[0-9]+/);
   if (!vimeoUrl) {
     return redirect(errorThumbnail);
@@ -15,7 +13,8 @@ exports.handler = async function (event, context) {
     vimeoUrl[0].replace(/\D/g, "");
   const response = await needle("get", vimeoEndpoint);
 
-  // console.log(`Referer:`, req.get("Referer"));
+  console.log(`Referer:`, req.get("Referer"));
+  console.log(`Video:`, event.path);
 
   if (/vimeo/.test(event.path) === false) {
     return redirect(errorThumbnail);
@@ -40,5 +39,5 @@ function redirect(destination) {
     headers: {
       Location: destination
     }
-  }
+  };
 }
